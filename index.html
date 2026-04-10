@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>猜數字遊戲</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 猜數字遊戲</h1>
+      <p class="subtitle">猜一個 1 到 100 之間的整數</p>
+    </header>
+
+    <main>
+      <!-- Game Section -->
+      <section class="game-section" id="game-section">
+        <div class="input-area">
+          <input
+            type="number"
+            id="guess-input"
+            min="1"
+            max="100"
+            placeholder="輸入你的猜測..."
+            aria-label="猜測數字"
+          />
+          <button id="submit-btn" class="btn btn-primary">確認</button>
+        </div>
+        <p id="error-msg" class="error-msg" aria-live="polite"></p>
+
+        <div id="hint-area" class="hint-area hidden">
+          <div id="hint-message" class="hint-message" aria-live="polite"></div>
+          <p class="guess-count">第 <span id="guess-count">0</span> 次猜測</p>
+        </div>
+
+        <!-- Guess History -->
+        <div id="history-area" class="history-area hidden">
+          <h3>猜測記錄</h3>
+          <ul id="history-list" class="history-list"></ul>
+        </div>
+      </section>
+
+      <!-- Win Section -->
+      <section class="win-section hidden" id="win-section">
+        <div class="win-card">
+          <div class="win-icon">🎉</div>
+          <h2>恭喜猜對了！</h2>
+          <p>答案是 <strong id="answer-display"></strong></p>
+          <p>你共猜了 <strong id="final-count"></strong> 次</p>
+          <button id="new-game-btn" class="btn btn-primary">再玩一次</button>
+        </div>
+      </section>
+
+      <!-- Statistics Section -->
+      <section class="stats-section">
+        <h2>📊 歷史成績</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-games">0</div>
+            <div class="stat-label">總局數</div>
+          </div>
+          <div class="stat-card highlight">
+            <div class="stat-value" id="stat-best">—</div>
+            <div class="stat-label">最佳成績</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-avg">—</div>
+            <div class="stat-label">平均次數</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">總猜測次數</div>
+          </div>
+        </div>
+
+        <!-- Score Trend -->
+        <div id="trend-area" class="trend-area hidden">
+          <h3>最近成績趨勢</h3>
+          <div class="trend-chart" id="trend-chart" aria-label="成績趨勢圖"></div>
+        </div>
+
+        <button id="reset-btn" class="btn btn-secondary">清除記錄</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

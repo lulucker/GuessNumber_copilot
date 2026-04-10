@@ -1,0 +1,386 @@
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary: #6b7280;
+  --secondary-hover: #4b5563;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg: #f3f4f6;
+  --card-bg: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 12px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --transition: 0.2s ease;
+}
+
+body {
+  font-family: 'Segoe UI', 'PingFang TC', 'Noto Sans TC', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+/* === Layout === */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+/* === Cards / Sections === */
+.game-section,
+.win-section,
+.stats-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+/* === Input Area === */
+.input-area {
+  display: flex;
+  gap: 12px;
+}
+
+#guess-input {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 1.1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color var(--transition);
+  -moz-appearance: textfield;
+}
+
+#guess-input::-webkit-inner-spin-button,
+#guess-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+#guess-input:focus {
+  border-color: var(--primary);
+}
+
+/* === Buttons === */
+.btn {
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--secondary);
+  border: 2px solid var(--border);
+  margin-top: 16px;
+  width: 100%;
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
+  border-color: var(--secondary);
+  color: var(--text);
+}
+
+/* === Error Message === */
+.error-msg {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+
+/* === Hint Area === */
+.hint-area {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.hint-message {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.hint-message.too-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.hint-message.too-low {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.hint-message.correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.guess-count {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* === Guess History === */
+.history-area {
+  margin-top: 24px;
+}
+
+.history-area h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.history-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.history-list li.too-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.history-list li.too-low {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.history-list li.correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* === Win Section === */
+.win-section {
+  text-align: center;
+}
+
+.win-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.win-icon {
+  font-size: 3.5rem;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-16px); }
+  60% { transform: translateY(-8px); }
+}
+
+.win-card h2 {
+  font-size: 1.8rem;
+  color: var(--success);
+}
+
+.win-card p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.win-card p strong {
+  color: var(--text);
+}
+
+.win-card .btn {
+  margin-top: 8px;
+}
+
+/* === Statistics Section === */
+.stats-section h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.stat-card.highlight {
+  border-color: var(--primary);
+  background: #eef2ff;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* === Trend Chart === */
+.trend-area {
+  margin-bottom: 16px;
+}
+
+.trend-area h3 {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.trend-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+  padding: 8px 0;
+}
+
+.trend-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 4px;
+}
+
+.trend-bar {
+  width: 100%;
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+  opacity: 0.8;
+}
+
+.trend-bar.best {
+  background: var(--success);
+  opacity: 1;
+}
+
+.trend-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* === Utility === */
+.hidden {
+  display: none !important;
+}
+
+/* === Responsive === */
+@media (min-width: 520px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  header h1 {
+    font-size: 1.7rem;
+  }
+
+  .game-section,
+  .win-section,
+  .stats-section {
+    padding: 20px;
+  }
+
+  .input-area {
+    flex-direction: column;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .hint-message {
+    font-size: 1.2rem;
+  }
+}
