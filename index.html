@@ -16,6 +16,15 @@
     <main>
       <!-- Game Section -->
       <section class="game-section" id="game-section">
+        <!-- Range indicator -->
+        <div class="range-indicator" id="range-indicator" aria-live="polite">
+          <span class="range-label">目前範圍</span>
+          <div class="range-bar-wrap">
+            <div class="range-bar" id="range-bar"></div>
+          </div>
+          <span class="range-text" id="range-text">1 ─ 100</span>
+        </div>
+
         <div class="input-area">
           <input
             type="number"
@@ -24,10 +33,16 @@
             max="100"
             placeholder="輸入你的猜測..."
             aria-label="猜測數字"
+            autocomplete="off"
           />
-          <button id="submit-btn" class="btn btn-primary">確認</button>
+          <button id="submit-btn" class="btn btn-primary">
+            <span class="btn-label">確認</span>
+          </button>
         </div>
-        <p id="error-msg" class="error-msg" aria-live="polite"></p>
+        <div class="input-footer">
+          <p id="error-msg" class="error-msg" aria-live="polite"></p>
+          <p class="key-hint">按 <kbd>Enter</kbd> 確認</p>
+        </div>
 
         <div id="hint-area" class="hint-area hidden">
           <div id="hint-message" class="hint-message" aria-live="polite"></div>
@@ -44,11 +59,12 @@
       <!-- Win Section -->
       <section class="win-section hidden" id="win-section">
         <div class="win-card">
-          <div class="win-icon">🎉</div>
-          <h2>恭喜猜對了！</h2>
-          <p>答案是 <strong id="answer-display"></strong></p>
-          <p>你共猜了 <strong id="final-count"></strong> 次</p>
-          <button id="new-game-btn" class="btn btn-primary">再玩一次</button>
+          <div class="win-icon" id="win-icon">🎉</div>
+          <div class="win-rating" id="win-rating" aria-label="成績評分"></div>
+          <h2 id="win-title">恭喜猜對了！</h2>
+          <p id="win-praise" class="win-praise"></p>
+          <p>答案是 <strong id="answer-display"></strong>，共猜了 <strong id="final-count"></strong> 次</p>
+          <button id="new-game-btn" class="btn btn-primary">🔄 再玩一次</button>
         </div>
       </section>
 
@@ -80,7 +96,7 @@
           <div class="trend-chart" id="trend-chart" aria-label="成績趨勢圖"></div>
         </div>
 
-        <button id="reset-btn" class="btn btn-secondary">清除記錄</button>
+        <button id="reset-btn" class="btn btn-secondary">🗑 清除記錄</button>
       </section>
     </main>
   </div>

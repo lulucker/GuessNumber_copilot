@@ -13,6 +13,8 @@ let secretNumber = 0;
 let guessCount = 0;
 let gameOver = false;
 let currentGuesses = []; // 本局猜測記錄
+let rangeLow = MIN;
+let rangeHigh = MAX;
 
 // === DOM 元素 ===
 const guessInput = document.getElementById('guess-input');
@@ -29,6 +31,12 @@ const answerDisplay = document.getElementById('answer-display');
 const finalCount = document.getElementById('final-count');
 const newGameBtn = document.getElementById('new-game-btn');
 const resetBtn = document.getElementById('reset-btn');
+const rangeText = document.getElementById('range-text');
+const rangeBar = document.getElementById('range-bar');
+const winIcon = document.getElementById('win-icon');
+const winTitle = document.getElementById('win-title');
+const winPraise = document.getElementById('win-praise');
+const winRating = document.getElementById('win-rating');
 
 const statGames = document.getElementById('stat-games');
 const statBest = document.getElementById('stat-best');
@@ -71,8 +79,16 @@ function clearStats() {
 }
 
 // === UI 更新 ===
-function renderStats() {
+function animateStatValue(el) {
+  el.classList.remove('updated');
+  // Force browser reflow/repaint to restart CSS animation by accessing offsetWidth
+  void el.offsetWidth;
+  el.classList.add('updated');
+}
+
+function renderStats(animate = false) {
   const stats = loadStats();
+
   statGames.textContent = stats.games;
   statTotal.textContent = stats.totalGuesses;
   statBest.textContent = stats.best !== null ? stats.best : '—';
@@ -81,6 +97,10 @@ function renderStats() {
     statAvg.textContent = (stats.totalGuesses / stats.games).toFixed(1);
   } else {
     statAvg.textContent = '—';
+  }
+
+  if (animate) {
+    [statGames, statTotal, statBest, statAvg].forEach(animateStatValue);
   }
 
   renderTrend(stats.history);
@@ -128,15 +148,90 @@ function addHistoryItem(number, result) {
   historyList.appendChild(li);
 }
 
+function updateRangeIndicator() {
+  const totalSpan = MAX - MIN;
+  const leftPct = ((rangeLow - MIN) / totalSpan) * 100;
+  const widthPct = ((rangeHigh - rangeLow) / totalSpan) * 100;
+  rangeBar.style.left = leftPct + '%';
+  rangeBar.style.width = widthPct + '%';
+  rangeText.textContent = rangeLow === rangeHigh
+    ? `${rangeLow}`
+    : `${rangeLow} ─ ${rangeHigh}`;
+}
+
+function triggerInputHint(type) {
+  guessInput.classList.remove('hint-high', 'hint-low');
+  if (type === 'high') guessInput.classList.add('hint-high');
+  if (type === 'low') guessInput.classList.add('hint-low');
+}
+
+function triggerShake() {
+  guessInput.classList.remove('shake');
+  // Force browser reflow/repaint to restart CSS animation
+  void guessInput.offsetWidth;
+  guessInput.classList.add('shake');
+  guessInput.addEventListener('animationend', () => {
+    guessInput.classList.remove('shake');
+  }, { once: true });
+}
+
+function triggerHintPop() {
+  hintMessage.classList.remove('pop');
+  void hintMessage.offsetWidth;
+  hintMessage.classList.add('pop');
+}
+
+// === Score rating ===
+function getWinPresentation(guesses) {
+  if (guesses <= 5) {
+    return {
+      icon: '🏆',
+      title: '太厲害了！',
+      praise: '你是猜數字天才！',
+      stars: '⭐⭐⭐⭐⭐',
+    };
+  } else if (guesses <= 8) {
+    return {
+      icon: '🎉',
+      title: '表現優秀！',
+      praise: '非常不錯的成績！',
+      stars: '⭐⭐⭐⭐',
+    };
+  } else if (guesses <= 12) {
+    return {
+      icon: '😊',
+      title: '恭喜猜對了！',
+      praise: '不錯喔，繼續努力！',
+      stars: '⭐⭐⭐',
+    };
+  } else if (guesses <= 18) {
+    return {
+      icon: '💪',
+      title: '終於猜到了！',
+      praise: '還有進步的空間，加油！',
+      stars: '⭐⭐',
+    };
+  }
+  return {
+    icon: '🐢',
+    title: '終於猜到了！',
+    praise: '下次試試二分法策略！',
+    stars: '⭐',
+  };
+}
+
 // === 遊戲核心 ===
 function startGame() {
   secretNumber = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
   guessCount = 0;
   gameOver = false;
   currentGuesses = [];
+  rangeLow = MIN;
+  rangeHigh = MAX;
 
   guessInput.value = '';
   guessInput.disabled = false;
+  guessInput.classList.remove('hint-high', 'hint-low', 'shake');
   submitBtn.disabled = false;
   errorMsg.textContent = '';
   hintArea.classList.add('hidden');
@@ -146,8 +241,12 @@ function startGame() {
   historyList.innerHTML = '';
   historyArea.classList.add('hidden');
 
+  updateRangeIndicator();
+
   winSection.classList.add('hidden');
-  gameSection.classList.remove('hidden');
+  winSection.classList.remove('section-fade-in');
+  gameSection.classList.remove('hidden', 'section-fade-out');
+  gameSection.classList.add('section-fade-in');
 
   guessInput.focus();
 }
@@ -160,6 +259,7 @@ function handleGuess() {
   // 輸入驗證
   if (raw === '') {
     errorMsg.textContent = '請輸入一個數字';
+    triggerShake();
     return;
   }
 
@@ -167,11 +267,13 @@ function handleGuess() {
 
   if (!Number.isInteger(num)) {
     errorMsg.textContent = '請輸入整數';
+    triggerShake();
     return;
   }
 
   if (num < MIN || num > MAX) {
     errorMsg.textContent = `請輸入 ${MIN} 到 ${MAX} 之間的數字`;
+    triggerShake();
     return;
   }
 
@@ -182,17 +284,27 @@ function handleGuess() {
   historyArea.classList.remove('hidden');
 
   if (num > secretNumber) {
-    hintMessage.textContent = '大了！數字太大';
+    hintMessage.textContent = '大了！數字太大 ↑';
     hintMessage.className = 'hint-message too-high';
     addHistoryItem(num, 'too-high');
+    triggerHintPop();
+    triggerInputHint('high');
+    rangeHigh = Math.min(rangeHigh, num - 1);
+    updateRangeIndicator();
   } else if (num < secretNumber) {
-    hintMessage.textContent = '小了！數字太小';
+    hintMessage.textContent = '小了！數字太小 ↓';
     hintMessage.className = 'hint-message too-low';
     addHistoryItem(num, 'too-low');
+    triggerHintPop();
+    triggerInputHint('low');
+    rangeLow = Math.max(rangeLow, num + 1);
+    updateRangeIndicator();
   } else {
     hintMessage.textContent = '🎉 猜對了！';
     hintMessage.className = 'hint-message correct';
     addHistoryItem(num, 'correct');
+    triggerHintPop();
+    guessInput.classList.remove('hint-high', 'hint-low');
     endGame();
     return;
   }
@@ -206,15 +318,28 @@ function endGame() {
   guessInput.disabled = true;
   submitBtn.disabled = true;
 
-  const stats = recordResult(guessCount);
-  renderStats();
+  recordResult(guessCount);
+  renderStats(true);
 
   // 顯示勝利畫面
+  const pres = getWinPresentation(guessCount);
+
   setTimeout(() => {
     answerDisplay.textContent = secretNumber;
     finalCount.textContent = guessCount;
-    gameSection.classList.add('hidden');
-    winSection.classList.remove('hidden');
+    winIcon.textContent = pres.icon;
+    winTitle.textContent = pres.title;
+    winPraise.textContent = pres.praise;
+    winRating.textContent = pres.stars;
+
+    gameSection.classList.add('section-fade-out');
+
+    setTimeout(() => {
+      gameSection.classList.add('hidden');
+      gameSection.classList.remove('section-fade-out');
+      winSection.classList.remove('hidden');
+      winSection.classList.add('section-fade-in');
+    }, 300);
   }, 600);
 }
 
